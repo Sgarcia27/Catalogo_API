@@ -1,0 +1,87 @@
+{
+  "info": {
+    "_postman_id": "80f80556-a926-4dcf-bafd-1f30787e4cbe",
+    "name": "Catalogo API - Persistencia",
+    "description": "Ejecuta esta colección manualmente después de reiniciar Node.js y de haber corrido la colección Catalogo API. Comprueba que el producto y el favorito de A persistieron; al final elimina el favorito de prueba.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Verificar favorito persistido tras reinicio",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Favorito de A persistió tras reiniciar Node', function () {",
+              "  pm.response.to.have.status(200);",
+              "  const favorites = pm.response.json();",
+              "  pm.expect(favorites.some(function (product) { return product.id === Number(pm.environment.get('favoriteProductId')); })).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/favoritos"
+      }
+    },
+    {
+      "name": "Verificar producto persistido tras reinicio",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Producto sigue disponible tras reiniciar Node', function () {",
+              "  pm.response.to.have.status(200);",
+              "  pm.expect(pm.response.json().id).to.eql(Number(pm.environment.get('favoriteProductId')));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/productos/{{favoriteProductId}}"
+      }
+    },
+    {
+      "name": "Eliminar favorito de prueba",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('El favorito se elimina con 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "  pm.expect(pm.response.json().productId).to.eql(Number(pm.environment.get('favoriteProductId')));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/favoritos/{{favoriteProductId}}"
+      }
+    }
+  ]
+}

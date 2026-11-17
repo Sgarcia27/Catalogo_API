@@ -29,16 +29,28 @@ async function addFavorite(userId, productId) {
   const existingFavorite = await getFavorite(userId, productId);
 
   if (existingFavorite) {
-    return existingFavorite;
+    const error = new Error('El producto ya está en tus favoritos');
+    error.statusCode = 409;
+    throw error;
   }
 
-  const result = await runSql(
-    `
-      INSERT INTO favorites (user_id, product_id)
-      VALUES (?, ?)
-    `,
-    [userId, productId],
-  );
+  let result;
+  try {
+    result = await runSql(
+      `
+        INSERT INTO favorites (user_id, product_id)
+        VALUES (?, ?)
+      `,
+      [userId, productId],
+    );
+  } catch (error) {
+    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      error.statusCode = 409;
+      error.message = 'El producto ya está en tus favoritos';
+    }
+
+    throw error;
+  }
 
   return {
     id: result.lastInsertRowid,

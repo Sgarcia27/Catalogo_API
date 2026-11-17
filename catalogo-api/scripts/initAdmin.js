@@ -1,17 +1,26 @@
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 const { initDatabase, db } = require('../src/config/database');
 
 function ensureAdmin() {
   initDatabase();
 
-  const email = (process.env.ADMIN_EMAIL || 'admin@catalogo.com').trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || 'Admin123!';
+  const email = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD || '';
   const name = process.env.ADMIN_NAME || 'Administrador';
+
+  if (!email || !password) {
+    throw new Error('Configura ADMIN_EMAIL y ADMIN_PASSWORD en el archivo .env');
+  }
 
   const existingUser = db.prepare('SELECT * FROM users WHERE email = ? LIMIT 1').get(email);
 
   if (existingUser) {
-    console.log(`Administrador ya existe: ${email}`);
+    if (existingUser.role !== 'admin') {
+      throw new Error('El correo configurado ya existe y no tiene rol de administrador');
+    }
+
+    console.log(`El administrador ya existe: ${email}`);
     return existingUser;
   }
 
@@ -21,7 +30,6 @@ function ensureAdmin() {
   ).run(name, email, passwordHash, 'admin');
 
   console.log(`Administrador creado: ${email}`);
-  console.log(`Contraseña temporal: ${password}`);
 
   return { id: result.lastInsertRowid, name, email, role: 'admin' };
 }

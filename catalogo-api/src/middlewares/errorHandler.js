@@ -8,9 +8,10 @@ function notFoundHandler(req, res) {
 function errorHandler(error, req, res, next) {
   console.error(error);
 
-  return res.status(error.statusCode || 500).json({
-    message: error.message || 'Error interno del servidor',
-  });
+  const statusCode = error.statusCode || 500;
+  const message = statusCode < 500 ? error.message : 'Error interno del servidor';
+
+  return res.status(statusCode).json({ message });
 }
 
 module.exports = {

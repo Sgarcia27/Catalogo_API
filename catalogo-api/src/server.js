@@ -17,7 +17,9 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productsRouter);
+app.use('/api/productos', productsRouter);
 app.use('/api/favorites', favoritesRouter);
+app.use('/api/favoritos', favoritesRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

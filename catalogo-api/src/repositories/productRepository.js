@@ -1,12 +1,22 @@
 const { allSql, getSql, runSql } = require('../config/database');
 const { normalizeProduct } = require('../models/product');
 
-async function listProducts() {
-  const rows = await allSql(`
-    SELECT *
-    FROM products
-    ORDER BY id ASC
-  `);
+async function listProducts(category) {
+  const rows = category
+    ? await allSql(
+      `
+        SELECT *
+        FROM products
+        WHERE LOWER(category) = LOWER(?)
+        ORDER BY id ASC
+      `,
+      [category],
+    )
+    : await allSql(`
+      SELECT *
+      FROM products
+      ORDER BY id ASC
+    `);
 
   return rows.map((product) => normalizeProduct(product));
 }

@@ -5,7 +5,15 @@ function isPositiveInteger(value) {
 }
 
 async function listProducts(req, res) {
-  const products = await productRepository.listProducts();
+  const category = req.query.category;
+
+  if (category !== undefined && (typeof category !== 'string' || !category.trim())) {
+    return res.status(400).json({ message: 'La categoría no es válida' });
+  }
+
+  const products = await productRepository.listProducts(
+    typeof category === 'string' ? category.trim() : undefined,
+  );
   return res.json(products);
 }
 
