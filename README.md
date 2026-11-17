@@ -54,3 +54,13 @@ El usuario administrador se crea mediante:
 npm run init:admin
 
 No se permite asignar el rol `admin` desde el registro público.
+
+## Probar con Postman
+
+1. Inicia el servidor con `npm start`.
+2. En Postman, importa `catalogo-api/postman/Catalogo API.postman_collection.json` y `catalogo-api/postman/Catalogo API Local.postman_environment.json`.
+3. Selecciona el entorno `Catalogo API Local`.
+4. Verifica que `adminEmail` y `adminPassword` coincidan con los valores de tu archivo `.env`.
+5. Ejecuta las solicitudes en orden. La colección registra un usuario de prueba, guarda los JWT de usuario y administrador, prueba catálogo y favoritos y después crea, actualiza y elimina un producto de prueba.
+
+La colección espera la API en `http://localhost:3000`. Si cambias el puerto, actualiza `baseUrl` en el entorno. La contraseña del administrador de ejemplo debe cambiarse si configuraste otra en `.env`.
